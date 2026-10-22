@@ -20,6 +20,7 @@ import {
   ShoppingOutlined,
   TeamOutlined,
 } from '@ant-design/icons-vue'
+import type { ResourceNode } from '@/api/admin/resource'
 
 export type SystemStatus = 'online' | 'building'
 
@@ -33,7 +34,7 @@ export interface SystemMenuNode {
 export interface SystemMeta {
   /** 唯一标识，同时用于 localStorage 记录上次使用 */
   key: string
-  /** 路由 meta.system 标识，与 BasicLayout 匹配 */
+  /** 路由 meta.system 标识，与 BasicLayout 匹配（= path 第一段） */
   routeKey: string
   name: string
   desc: string
@@ -48,141 +49,205 @@ export interface SystemMeta {
 }
 
 /**
- * 中台注册表：门户卡片与布局菜单的唯一数据源。
- * 新增中台：加一条记录（building 状态自动出现在门户，开发完成后改为 online
- * 并补充 home / menus / 路由 / 页面即可）。
+ * UI 元数据映射表：后端 catalog 只负责业务结构（code/path/children），
+ * 图标、颜色、简介属于前端展示属性，集中在这里按 catalog.path 匹配。
+ * 以后新增中台只需要在此补一条映射 + 后端加 catalog 种子。
  */
-export const SYSTEMS: SystemMeta[] = [
-  {
-    key: 'admin',
-    routeKey: 'admin',
-    name: '用户管理中台',
-    desc: '组织架构、账号权限与角色配置',
+const UI_META: Record<string, { icon: Component; color: string; desc: string }> = {
+  '/admin': {
     icon: TeamOutlined,
     color: '#1677ff',
-    status: 'online',
-    home: '/admin/dashboard',
-    menus: [
-      { key: '/admin/dashboard', icon: DashboardOutlined, label: '中台首页' },
-      {
-        key: '/admin/system',
-        icon: SettingOutlined,
-        label: '系统管理',
-        children: [
-          { key: '/admin/users', icon: TeamOutlined, label: '用户管理' },
-          { key: '/admin/roles', icon: SafetyOutlined, label: '角色管理' },
-          { key: '/admin/departments', icon: ApartmentOutlined, label: '组织管理' },
-          { key: '/admin/resources', icon: AppstoreOutlined, label: '资源管理' },
-        ],
-      },
-    ],
+    desc: '组织架构、账号权限与角色配置',
   },
-  {
-    key: 'data',
-    routeKey: 'data',
-    name: '数据中台',
-    desc: '业务指标、数据趋势与报表分析',
+  '/data': {
     icon: DatabaseOutlined,
     color: '#00b96b',
-    status: 'online',
-    home: '/data/overview',
-    menus: [
-      { key: '/data/overview', icon: BarChartOutlined, label: '数据概览' },
-      { key: '/data/sources', icon: ClusterOutlined, label: '数据源管理' },
-    ],
+    desc: '业务指标、数据趋势与报表分析',
   },
-  {
-    key: 'order',
-    routeKey: 'order',
-    name: '订单中台',
-    desc: '交易订单全链路管理与跟踪',
+  '/order': {
     icon: ShoppingCartOutlined,
     color: '#13c2c2',
-    status: 'building',
+    desc: '交易订单全链路管理与跟踪',
   },
-  {
-    key: 'goods',
-    routeKey: 'goods',
-    name: '商品中台',
-    desc: '商品信息、类目与库存管理',
+  '/goods': {
     icon: ShoppingOutlined,
     color: '#52c41a',
-    status: 'building',
+    desc: '商品信息、类目与库存管理',
   },
-  {
-    key: 'marketing',
-    routeKey: 'marketing',
-    name: '营销中台',
-    desc: '活动、优惠券与触达策略配置',
+  '/marketing': {
     icon: NotificationOutlined,
     color: '#722ed1',
-    status: 'building',
+    desc: '活动、优惠券与触达策略配置',
   },
-  {
-    key: 'finance',
-    routeKey: 'finance',
-    name: '财务中台',
-    desc: '结算、对账与经营报表',
+  '/finance': {
     icon: MoneyCollectOutlined,
     color: '#faad14',
-    status: 'building',
+    desc: '结算、对账与经营报表',
   },
-  {
-    key: 'content',
-    routeKey: 'content',
-    name: '内容中台',
-    desc: '图文、素材与内容分发管理',
+  '/content': {
     icon: FileTextOutlined,
     color: '#2f54eb',
-    status: 'building',
+    desc: '图文、素材与内容分发管理',
   },
-  {
-    key: 'service',
-    routeKey: 'service',
-    name: '客服中台',
-    desc: '工单、会话与满意度管理',
+  '/service': {
     icon: CustomerServiceOutlined,
     color: '#f759ab',
-    status: 'building',
+    desc: '工单、会话与满意度管理',
   },
-  {
-    key: 'supply',
-    routeKey: 'supply',
-    name: '供应链中台',
-    desc: '采购、仓储与物流协同',
+  '/supply': {
     icon: CarOutlined,
     color: '#fa8c16',
-    status: 'building',
+    desc: '采购、仓储与物流协同',
   },
-  {
-    key: 'operation',
-    routeKey: 'operation',
-    name: '运营中台',
-    desc: '用户增长与平台运营策略',
+  '/operation': {
     icon: RocketOutlined,
     color: '#eb2f96',
-    status: 'building',
+    desc: '用户增长与平台运营策略',
   },
-  {
-    key: 'monitor',
-    routeKey: 'monitor',
-    name: '监控中台',
-    desc: '系统监控、告警与链路追踪',
+  '/monitor': {
     icon: FundOutlined,
     color: '#5b8ff9',
-    status: 'building',
+    desc: '系统监控、告警与链路追踪',
   },
-  {
-    key: 'project',
-    routeKey: 'project',
-    name: '项目中台',
-    desc: '项目计划、进度与协作管理',
+  '/project': {
     icon: ProjectOutlined,
     color: '#36cfc9',
-    status: 'building',
+    desc: '项目计划、进度与协作管理',
   },
+}
+
+/** building 中台硬编码（后端暂未加 catalog 种子） */
+const BUILDING_PATH_PREFIXES = [
+  '/order',
+  '/goods',
+  '/marketing',
+  '/finance',
+  '/content',
+  '/service',
+  '/supply',
+  '/operation',
+  '/monitor',
+  '/project',
 ]
 
-export function getSystem(routeKey: string): SystemMeta | undefined {
-  return SYSTEMS.find((s) => s.routeKey === routeKey)
+/** path → 默认 icon（兜底，避免 UI_META 缺失时显示空白） */
+function defaultIconFor(path: string): Component {
+  const leaf = path.split('/').pop() || path
+  const first = leaf[0]?.toLowerCase() ?? 'a'
+  if (['d', 'o'].includes(first)) return DashboardOutlined
+  if (['s', 't'].includes(first)) return SettingOutlined
+  return AppstoreOutlined
 }
+
+/** 将后端菜单树递归转为 Ant Design Menu items 格式 */
+const MENU_ICON_POOL: Component[] = [
+  DashboardOutlined,
+  SettingOutlined,
+  TeamOutlined,
+  SafetyOutlined,
+  ApartmentOutlined,
+  AppstoreOutlined,
+  DatabaseOutlined,
+  BarChartOutlined,
+  ClusterOutlined,
+]
+function toMenuNode(node: ResourceNode, depth = 0): SystemMenuNode {
+  const icon = MENU_ICON_POOL[(depth + node.sort) % MENU_ICON_POOL.length]
+  const base: SystemMenuNode = { key: node.path || node.code, icon, label: node.name }
+  const children = node.children?.filter((c) => c.type !== 'button' && c.type !== 'api')
+  if (children && children.length > 0) {
+    base.children = children.map((c) => toMenuNode(c, depth + 1))
+  }
+  return base
+}
+
+/**
+ * 从后端资源树 + 前端 building 列表生成完整中台注册表。
+ *
+ * 规则：
+ *  - 顶层 catalog（type=catalog）= online 中台，path 同时作为 routeKey
+ *  - building 中台前缀不在后端 catalog 列表里的，追加为 building 状态
+ */
+export function buildSystems(resourceTree: ResourceNode[]): SystemMeta[] {
+  const online = resourceTree
+    .filter((n) => n.type === 'catalog' && !!n.path)
+    .map<SystemMeta>((catalog) => {
+      const ui = UI_META[catalog.path!] ?? {
+        icon: defaultIconFor(catalog.path!),
+        color: '#1677ff',
+        desc: catalog.name,
+      }
+      // 中台首页：catalog 下第一个菜单（type=menu 排序最前）
+      const allChildren = collectFlat(catalog).filter((c) => c.type === 'menu')
+      const home = allChildren.sort((a, b) => a.sort - b.sort)[0]?.path ?? catalog.path
+      // 侧边栏菜单：catalog 下的直接子级（递归过滤按钮/接口）
+      const menus = catalog.children
+        ?.filter((c) => c.type !== 'button' && c.type !== 'api')
+        .map((c) => toMenuNode(c, 0))
+
+      return {
+        key: catalog.code,
+        routeKey: catalog.path!.replace(/^\//, '').split('/')[0],
+        name: catalog.name,
+        desc: ui.desc,
+        icon: ui.icon,
+        color: ui.color,
+        status: 'online',
+        home,
+        menus,
+      }
+    })
+
+  const onlinePaths = new Set(online.map((s) => `/s.routeKey`))
+  const building = BUILDING_PATH_PREFIXES
+    .filter((p) => !onlinePaths.has(p))
+    .map<SystemMeta>((p) => {
+      const ui = UI_META[p]!
+      return {
+        key: p.replace(/^\//, ''),
+        routeKey: p.replace(/^\//, ''),
+        name: getSystemNameFromPath(p),
+        desc: ui.desc,
+        icon: ui.icon,
+        color: ui.color,
+        status: 'building',
+      }
+    })
+
+  // online 按 sort，building 按路径顺序
+  return [...online, ...building]
+}
+
+function getSystemNameFromPath(path: string): string {
+  const map: Record<string, string> = {
+    '/order': '订单中台',
+    '/goods': '商品中台',
+    '/marketing': '营销中台',
+    '/finance': '财务中台',
+    '/content': '内容中台',
+    '/service': '客服中台',
+    '/supply': '供应链中台',
+    '/operation': '运营中台',
+    '/monitor': '监控中台',
+    '/project': '项目中台',
+  }
+  return map[path] ?? path
+}
+
+/** 递归收集所有后代节点（含自身） */
+function collectFlat(node: ResourceNode): ResourceNode[] {
+  const out: ResourceNode[] = [node]
+  for (const c of node.children ?? []) out.push(...collectFlat(c))
+  return out
+}
+
+/** 根据 routeKey 查中台（动态生成后使用） */
+export function findSystem(routeKey: string, systems: SystemMeta[]): SystemMeta | undefined {
+  return systems.find((s) => s.routeKey === routeKey)
+}
+
+/**
+ * 仅用于静态引用（类型兼容、未 fetchResourceTree 之前）。
+ * 新代码请使用 buildSystems(fetchResourceTree()) 动态生成。
+ */
+export const EMPTY_SYSTEMS: SystemMeta[] = []

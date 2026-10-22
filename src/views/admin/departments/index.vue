@@ -78,6 +78,7 @@
               :columns="subColumns"
               :data-source="selected.children || []"
               :pagination="false"
+              :scroll="{ x: 700 }"
               row-key="id"
               size="middle"
             >
@@ -101,7 +102,7 @@
           </a-tab-pane>
           <a-tab-pane key="members" tab="组织成员">
             <div class="sub-toolbar">
-              <span class="sub-title">共 {{ members.length }} 人</span>
+              <span class="sub-title">共 {{ members.length }} 人（含下级组织）</span>
               <a-button type="primary" size="small" @click="openMemberModal()">
                 <template #icon><UserAddOutlined /></template>
                 添加成员
@@ -112,11 +113,15 @@
               :data-source="members"
               :loading="membersLoading"
               :pagination="false"
+              :scroll="{ x: 700 }"
               row-key="id"
               size="middle"
             >
               <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'status'">
+                <template v-if="column.key === 'deptId'">
+                  <span class="dept-path">{{ deptPath(record.deptId) }}</span>
+                </template>
+                <template v-else-if="column.key === 'status'">
                   <a-badge
                     :status="record.status === 1 ? 'success' : 'default'"
                     :text="record.status === 1 ? '在职' : '离职'"
@@ -264,13 +269,13 @@ const selectedKeys = ref<number[]>([])
 const nameMap = ref<Record<number, string>>({})
 
 const subColumns = [
-  { title: '名称', dataIndex: 'name', key: 'name' },
-  { title: '编码', dataIndex: 'code', key: 'code', width: 120 },
-  { title: '负责人', dataIndex: 'leader', key: 'leader', width: 100 },
-  { title: '排序', dataIndex: 'sort', key: 'sort', width: 70 },
-  { title: '状态', dataIndex: 'status', key: 'status', width: 90 },
-  { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 160 },
-  { title: '操作', key: 'action', width: 120 },
+  { title: '名称', dataIndex: 'name', key: 'name', width: 110, ellipsis: true },
+  { title: '编码', dataIndex: 'code', key: 'code', width: 140, ellipsis: true },
+  { title: '负责人', dataIndex: 'leader', key: 'leader', width: 80 },
+  { title: '排序', dataIndex: 'sort', key: 'sort', width: 55 },
+  { title: '状态', dataIndex: 'status', key: 'status', width: 75 },
+  { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 150 },
+  { title: '操作', key: 'action', width: 90 },
 ]
 
 function findNode(nodes: DeptNode[], id: number): DeptNode | undefined {
@@ -411,26 +416,37 @@ const memberRules = {
 }
 
 const memberColumns = [
-  { title: '姓名', dataIndex: 'name', key: 'name' },
-  { title: '职位', dataIndex: 'position', key: 'position' },
-  { title: '联系电话', dataIndex: 'phone', key: 'phone', width: 130 },
-  { title: '邮箱', dataIndex: 'email', key: 'email', ellipsis: true },
-  { title: '状态', dataIndex: 'status', key: 'status', width: 90 },
-  { title: '操作', key: 'action', width: 80 },
+  { title: '姓名', dataIndex: 'name', key: 'name', width: 95 },
+  { title: '职位', dataIndex: 'position', key: 'position', width: 85 },
+  { title: '所属组织', dataIndex: 'deptId', key: 'deptId', width: 190 },
+  { title: '联系电话', dataIndex: 'phone', key: 'phone', width: 110 },
+  { title: '邮箱', dataIndex: 'email', key: 'email', width: 105, ellipsis: true },
+  { title: '状态', dataIndex: 'status', key: 'status', width: 60 },
+  { title: '操作', key: 'action', width: 55 },
 ]
 
+/** 收集当前组织及全部下级组织 id（递归） */
+function collectDeptIds(node: DeptNode): number[] {
+  return [node.id, ...(node.children ?? []).flatMap(collectDeptIds)]
+}
+
 async function loadMembers() {
-  if (!selected.value) {
+  const target = selected.value
+  if (!target) {
     members.value = []
     return
   }
   membersLoading.value = true
   try {
-    members.value = await fetchDeptMembers(selected.value.id)
+    // 组织成员需包含递归子集：并行拉取当前组织及所有下级组织的成员后合并
+    const groups = await Promise.all(collectDeptIds(target).map((id) => fetchDeptMembers(id)))
+    // 快速切换组织时丢弃过期响应
+    if (selected.value?.id !== target.id) return
+    members.value = groups.flat()
   } catch (err) {
     message.error(err instanceof Error ? err.message : '成员加载失败')
   } finally {
-    membersLoading.value = false
+    if (selected.value?.id === target.id) membersLoading.value = false
   }
 }
 
@@ -456,7 +472,8 @@ async function handleMemberSubmit() {
     await createDeptMember({ ...memberForm, deptId: memberTarget.value.id })
     message.success('成员已添加')
     memberModalOpen.value = false
-    if (selected.value?.id === memberTarget.value.id) {
+    // 目标组织在当前选中组织的子树内时刷新（成员列表含下级组织成员）
+    if (selected.value && collectDeptIds(selected.value).includes(memberTarget.value.id)) {
       loadMembers()
     }
   } catch (err) {
@@ -493,7 +510,7 @@ onMounted(() => loadTree(false))
 }
 
 .dept-tree-card {
-  width: 320px;
+  width: 250px;
   flex-shrink: 0;
 }
 
@@ -510,14 +527,19 @@ onMounted(() => loadTree(false))
 
   .node-name {
     display: flex;
+    flex: 1;
     align-items: center;
     gap: 4px;
+    min-width: 0;
     overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     color: var(--text-main);
   }
 
   .node-actions {
     display: none;
+    flex-shrink: 0;
     align-items: center;
     gap: 10px;
     font-size: 14px;
@@ -572,6 +594,12 @@ onMounted(() => loadTree(false))
 
 .danger-link {
   color: #ff4d4f;
+}
+
+/* 成员所属组织层级路径 */
+.dept-path {
+  color: var(--text-main);
+  opacity: 0.85;
 }
 
 @media (max-width: 900px) {

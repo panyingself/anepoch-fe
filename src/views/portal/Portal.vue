@@ -116,7 +116,7 @@ import { useRouter } from 'vue-router'
 import { AppstoreFilled, LogoutOutlined } from '@ant-design/icons-vue'
 import { message } from 'ant-design-vue'
 import { useUserStore } from '@/stores/user'
-import { SYSTEMS } from '@/config/systems'
+import { useSystems } from '@/composables/useSystems'
 import type { SystemMeta } from '@/config/systems'
 import CosmicBackground from '@/components/CosmicBackground.vue'
 
@@ -124,9 +124,9 @@ const LAST_SYSTEM_KEY = 'anepoch_last_system'
 
 const router = useRouter()
 const userStore = useUserStore()
+const { systems, ensureLoaded, resetCache } = useSystems()
 
-const systems = SYSTEMS
-const onlineCount = computed(() => systems.filter((s) => s.status === 'online').length)
+const onlineCount = computed(() => systems.value.filter((s) => s.status === 'online').length)
 const lastSystem = ref('')
 
 /** 彩色气泡：确定性伪随机，避免每次渲染跳动 */
@@ -159,8 +159,9 @@ const clearTilt = (key: string) => {
   tiltMap.value = rest
 }
 
-onMounted(() => {
+onMounted(async () => {
   lastSystem.value = localStorage.getItem(LAST_SYSTEM_KEY) || ''
+  await ensureLoaded()
 })
 
 function enterSystem(s: SystemMeta) {
@@ -175,6 +176,7 @@ function enterSystem(s: SystemMeta) {
 }
 
 const onLogout = () => {
+  resetCache()
   userStore.logout()
   message.success('已退出登录')
   router.push('/login')

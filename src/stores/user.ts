@@ -33,5 +33,17 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem(USER_KEY)
   }
 
-  return { token, userInfo, login, logout }
+  /** 直接设置 token（多登录方式共用的通用入口） */
+  function setToken(t: string) {
+    token.value = t
+    localStorage.setItem(TOKEN_KEY, t)
+  }
+
+  /** 直接设置用户信息（多登录方式共用的通用入口） */
+  function setUserInfo(u: UserInfo) {
+    userInfo.value = u
+    localStorage.setItem(USER_KEY, JSON.stringify(u))
+  }
+
+  return { token, userInfo, login, logout, setToken, setUserInfo }
 })

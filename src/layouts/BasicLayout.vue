@@ -10,7 +10,7 @@
     >
       <div class="logo">
         <AppstoreOutlined class="logo-icon" />
-        <span v-if="!collapsed" class="logo-title">{{ currentSystem.name }}</span>
+        <span v-if="!collapsed" class="logo-title">{{ currentSystem?.name ?? '加载中...' }}</span>
       </div>
       <a-menu
         v-model:selectedKeys="selectedKeys"
@@ -36,7 +36,7 @@
           </a-tooltip>
           <a-breadcrumb>
             <a-breadcrumb-item>
-              <router-link :to="currentSystem.home || '/'">{{ currentSystem.name }}</router-link>
+              <router-link :to="currentSystem?.home || '/'">{{ currentSystem?.name ?? '中台首页' }}</router-link>
             </a-breadcrumb-item>
             <a-breadcrumb-item v-if="route.meta.parent">{{ route.meta.parent }}</a-breadcrumb-item>
             <a-breadcrumb-item v-if="route.meta.title">{{ route.meta.title }}</a-breadcrumb-item>
@@ -98,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, h, ref, watch } from 'vue'
+import { computed, h, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import type { MenuProps, ItemType } from 'ant-design-vue'
 import { AppstoreOutlined, MenuFoldOutlined, MenuUnfoldOutlined, LogoutOutlined, BgColorsOutlined, DownOutlined } from '@ant-design/icons-vue'
@@ -108,20 +108,21 @@ import { useThemeStore } from '@/stores/theme'
 import { getTheme, THEME_LIST } from '@/config/themes'
 import ThemeAmbient from '@/components/ThemeAmbient.vue'
 import type { ThemeId } from '@/config/themes'
-import { getSystem } from '@/config/systems'
 import type { SystemMenuNode } from '@/config/systems'
+import { useSystems } from '@/composables/useSystems'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const themeStore = useThemeStore()
+const { systems, loaded, ensureLoaded, getSystem, resetCache } = useSystems()
 
 const collapsed = ref(false)
 const selectedKeys = ref<string[]>([route.path])
 const openKeys = ref<string[]>([])
 
 const currentSystem = computed(
-  () => getSystem(String(route.meta.system ?? 'admin')) ?? getSystem('admin')!,
+  () => getSystem(String(route.meta.system ?? 'admin')) ?? getSystem('admin'),
 )
 
 const currentTheme = computed(() => getTheme(themeStore.current))
@@ -139,7 +140,11 @@ function toMenuItem(node: SystemMenuNode): ItemType {
   return { key: node.key, icon: () => h(node.icon), label: node.label }
 }
 
-const menuItems = computed<ItemType[]>(() => currentSystem.value.menus?.map(toMenuItem) ?? [])
+const menuItems = computed<ItemType[]>(() => currentSystem.value?.menus?.map(toMenuItem) ?? [])
+
+onMounted(async () => {
+  await ensureLoaded()
+})
 
 watch(
   () => route.path,
@@ -157,6 +162,7 @@ const onMenuClick: MenuProps['onClick'] = ({ key }) => {
 }
 
 const onLogout = () => {
+  resetCache()
   userStore.logout()
   message.success('已退出登录')
   router.push('/login')

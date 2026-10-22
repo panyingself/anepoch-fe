@@ -13,10 +13,10 @@ export default defineConfig({
     host: true,
     port: 5180,
     strictPort: true,
-    // 后端就绪后在此配置代理
+    // 后端 keeay-user 服务：http://localhost:8089/keeay-user（context-path 已含在 target 中，不做 rewrite）
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
+      '/keeay-user': {
+        target: 'http://localhost:8089',
         changeOrigin: true,
       },
     },

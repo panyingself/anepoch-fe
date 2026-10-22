@@ -65,12 +65,22 @@
           <span v-else class="text-sub">未分配</span>
         </template>
         <template v-else-if="column.key === 'status'">
-          <a-switch
-            :checked="record.status === 1"
-            checked-children="启用"
-            un-checked-children="禁用"
-            @change="() => onToggleStatus(record)"
-          />
+          <a-popconfirm
+            :title="
+              record.status === 1
+                ? `确定禁用用户「${record.nickname || record.username}」吗？禁用后将无法登录。`
+                : `确定启用用户「${record.nickname || record.username}」吗？`
+            "
+            :ok-text="record.status === 1 ? '确定禁用' : '确定启用'"
+            cancel-text="取消"
+            @confirm="onToggleStatus(record)"
+          >
+            <a-switch
+              :checked="record.status === 1"
+              checked-children="启用"
+              un-checked-children="禁用"
+            />
+          </a-popconfirm>
         </template>
         <template v-else-if="column.key === 'action'">
           <a-space>
