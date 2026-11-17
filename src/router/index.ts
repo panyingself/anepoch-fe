@@ -18,6 +18,12 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '中台选择' },
   },
   {
+    path: '/website',
+    name: 'website',
+    component: () => import('@/views/website/index.vue'),
+    meta: { title: '企业官网', public: true },
+  },
+  {
     path: '/',
     redirect: '/portal',
   },

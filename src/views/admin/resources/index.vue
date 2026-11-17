@@ -96,8 +96,16 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="权限编码" name="code">
-              <a-input v-model:value="formState.code" placeholder="如：admin:user:create" />
+            <a-form-item
+              label="权限编码"
+              name="code"
+              :extra="editing ? '权限编码参与权限树与角色授权，创建后不可修改' : undefined"
+            >
+              <a-input
+                v-model:value="formState.code"
+                :disabled="editing"
+                placeholder="如：admin:user:create"
+              />
             </a-form-item>
           </a-col>
           <a-col :span="12">

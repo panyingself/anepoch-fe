@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { getUserMenus, type MenuNode } from '@/api/auth'
-import { buildSystems, type SystemMeta } from '@/config/systems'
+import { buildSystems, OFFICIAL_SITE, type SystemMeta } from '@/config/systems'
 
 /** 模块级缓存 + 懒加载：整个前端生命周期只 fetch 一次 */
 const systemsCache = ref<SystemMeta[]>([])
@@ -31,13 +31,14 @@ export function useSystems() {
       .then((tree) => {
         // getUserMenus 返回的 MenuNode 适配成 ResourceNode 形状复用 buildSystems
         const adapted = tree.map(toResourceNode)
-        systemsCache.value = buildSystems(adapted)
+        // 官网卡片为内置项，不参与权限数据，始终排在首位
+        systemsCache.value = [OFFICIAL_SITE, ...buildSystems(adapted)]
         loaded.value = true
         return systemsCache.value
       })
       .catch(() => {
-        // 后端异常时返回空列表，不让 UI 崩
-        systemsCache.value = []
+        // 后端异常或无权限数据时，至少保留内置官网卡片，不让 UI 空掉
+        systemsCache.value = [OFFICIAL_SITE]
         loaded.value = true
         return systemsCache.value
       })

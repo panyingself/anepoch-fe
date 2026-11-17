@@ -78,18 +78,12 @@
               :columns="subColumns"
               :data-source="selected.children || []"
               :pagination="false"
-              :scroll="{ x: 700 }"
+              :scroll="{ x: 610 }"
               row-key="id"
               size="middle"
             >
               <template #bodyCell="{ column, record }">
-                <template v-if="column.key === 'status'">
-                  <a-badge
-                    :status="record.status === 1 ? 'success' : 'default'"
-                    :text="record.status === 1 ? '启用' : '停用'"
-                  />
-                </template>
-                <template v-else-if="column.key === 'action'">
+                <template v-if="column.key === 'action'">
                   <a-space>
                     <a @click="openModal(record)">编辑</a>
                     <a-popconfirm title="确定删除该组织吗？" @confirm="onDelete(record)">
@@ -113,7 +107,7 @@
               :data-source="members"
               :loading="membersLoading"
               :pagination="false"
-              :scroll="{ x: 700 }"
+              :scroll="{ x: 695 }"
               row-key="id"
               size="middle"
             >
@@ -269,13 +263,11 @@ const selectedKeys = ref<number[]>([])
 const nameMap = ref<Record<number, string>>({})
 
 const subColumns = [
-  { title: '名称', dataIndex: 'name', key: 'name', width: 110, ellipsis: true },
-  { title: '编码', dataIndex: 'code', key: 'code', width: 140, ellipsis: true },
-  { title: '负责人', dataIndex: 'leader', key: 'leader', width: 80 },
-  { title: '排序', dataIndex: 'sort', key: 'sort', width: 55 },
-  { title: '状态', dataIndex: 'status', key: 'status', width: 75 },
-  { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 150 },
-  { title: '操作', key: 'action', width: 90 },
+  { title: '名称', dataIndex: 'name', key: 'name', width: 180, ellipsis: true },
+  { title: '负责人', dataIndex: 'leader', key: 'leader', width: 100 },
+  { title: '排序', dataIndex: 'sort', key: 'sort', width: 70 },
+  { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt', width: 160 },
+  { title: '操作', key: 'action', width: 100 },
 ]
 
 function findNode(nodes: DeptNode[], id: number): DeptNode | undefined {
@@ -416,13 +408,13 @@ const memberRules = {
 }
 
 const memberColumns = [
-  { title: '姓名', dataIndex: 'name', key: 'name', width: 95 },
-  { title: '职位', dataIndex: 'position', key: 'position', width: 85 },
-  { title: '所属组织', dataIndex: 'deptId', key: 'deptId', width: 190 },
-  { title: '联系电话', dataIndex: 'phone', key: 'phone', width: 110 },
-  { title: '邮箱', dataIndex: 'email', key: 'email', width: 105, ellipsis: true },
+  { title: '姓名', dataIndex: 'name', key: 'name', width: 90 },
+  { title: '职位', dataIndex: 'position', key: 'position', width: 80 },
+  { title: '所属组织', dataIndex: 'deptId', key: 'deptId', width: 215 },
+  { title: '联系电话', dataIndex: 'phone', key: 'phone', width: 105 },
+  { title: '邮箱', dataIndex: 'email', key: 'email', width: 95, ellipsis: true },
   { title: '状态', dataIndex: 'status', key: 'status', width: 60 },
-  { title: '操作', key: 'action', width: 55 },
+  { title: '操作', key: 'action', width: 50 },
 ]
 
 /** 收集当前组织及全部下级组织 id（递归） */
@@ -541,7 +533,8 @@ onMounted(() => loadTree(false))
     display: none;
     flex-shrink: 0;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    margin-left: 8px;
     font-size: 14px;
     color: var(--icon-color, rgba(0, 0, 0, 0.65));
 
@@ -598,6 +591,7 @@ onMounted(() => loadTree(false))
 
 /* 成员所属组织层级路径 */
 .dept-path {
+  font-size: 12px;
   color: var(--text-main);
   opacity: 0.85;
 }

@@ -10,6 +10,7 @@ import {
   DatabaseOutlined,
   FileTextOutlined,
   FundOutlined,
+  GlobalOutlined,
   MoneyCollectOutlined,
   NotificationOutlined,
   ProjectOutlined,
@@ -46,6 +47,24 @@ export interface SystemMeta {
   home?: string
   /** online 系统的侧边栏菜单（BasicLayout 使用） */
   menus?: SystemMenuNode[]
+  /** 内置卡片（如官网），不参与权限数据，也不计入中台统计 */
+  builtin?: boolean
+}
+
+/**
+ * 内置官网卡片：不来自后端资源树，不受 RBAC 权限控制，
+ * 登录后始终展示在门户首位。
+ */
+export const OFFICIAL_SITE: SystemMeta = {
+  key: 'website',
+  routeKey: 'website',
+  name: '企业官网',
+  desc: '品牌形象、产品展示与案例资讯',
+  icon: GlobalOutlined,
+  color: '#38bdf8',
+  status: 'online',
+  home: '/website',
+  builtin: true,
 }
 
 /**

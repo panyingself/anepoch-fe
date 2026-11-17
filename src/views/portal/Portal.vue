@@ -35,7 +35,7 @@
             <p class="brand-sub">
               <span class="en">MID-PLATFORM PORTAL</span>
               <span class="divider" />
-              共 {{ systems.length }} 个中台 · {{ onlineCount }} 个已上线
+              共 {{ platformCount }} 个中台 · {{ onlineCount }} 个已上线
             </p>
           </div>
         </div>
@@ -126,7 +126,12 @@ const router = useRouter()
 const userStore = useUserStore()
 const { systems, ensureLoaded, resetCache } = useSystems()
 
-const onlineCount = computed(() => systems.value.filter((s) => s.status === 'online').length)
+/** 内置卡片（官网）不计入中台数量与上线统计 */
+const platformSystems = computed(() => systems.value.filter((s) => !s.builtin))
+const platformCount = computed(() => platformSystems.value.length)
+const onlineCount = computed(
+  () => platformSystems.value.filter((s) => s.status === 'online').length,
+)
 const lastSystem = ref('')
 
 /** 彩色气泡：确定性伪随机，避免每次渲染跳动 */
@@ -169,7 +174,8 @@ function enterSystem(s: SystemMeta) {
     message.info(`「${s.name}」正在建设中，敬请期待`)
     return
   }
-  localStorage.setItem(LAST_SYSTEM_KEY, s.key)
+  // 内置官网不计入「上次使用」记录
+  if (!s.builtin) localStorage.setItem(LAST_SYSTEM_KEY, s.key)
   // 新标签页打开中台系统
   const { href } = router.resolve(s.home || '/')
   window.open(href, '_blank')
