@@ -211,7 +211,8 @@ async function loadList() {
   loading.value = true
   try {
     list.value = await fetchResourceTree()
-    expandedKeys.value = flattenKeys(list.value)
+    // 默认全部折叠：只展示顶层节点，子级由用户手动展开
+    expandedKeys.value = []
   } catch (err) {
     message.error(err instanceof Error ? err.message : '加载失败')
   } finally {

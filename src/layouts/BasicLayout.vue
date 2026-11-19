@@ -150,9 +150,10 @@ watch(
   () => route.path,
   (path) => {
     selectedKeys.value = [path]
-    if (path.startsWith('/admin/system')) {
-      openKeys.value = Array.from(new Set([...openKeys.value, '/admin/system']))
-    }
+    // 自动展开当前路由的所有上级菜单（如 /marketing/campaign/list → /marketing/campaign）
+    const segments = path.split('/').filter(Boolean)
+    const ancestors = segments.slice(0, -1).map((_, i) => '/' + segments.slice(0, i + 1).join('/'))
+    openKeys.value = Array.from(new Set([...openKeys.value, ...ancestors]))
   },
   { immediate: true },
 )

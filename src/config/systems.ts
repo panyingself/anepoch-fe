@@ -135,15 +135,12 @@ const UI_META: Record<string, { icon: Component; color: string; desc: string }> 
   },
 }
 
-/** building 中台硬编码（后端暂未加 catalog 种子） */
+/** building 中台硬编码（后端暂未加 catalog 种子，marketing 已接入后端资源树） */
 const BUILDING_PATH_PREFIXES = [
   '/order',
   '/goods',
-  '/marketing',
   '/finance',
-  '/content',
   '/service',
-  '/supply',
   '/operation',
   '/monitor',
   '/project',
@@ -196,9 +193,14 @@ export function buildSystems(resourceTree: ResourceNode[]): SystemMeta[] {
         color: '#1677ff',
         desc: catalog.name,
       }
-      // 中台首页：catalog 下第一个菜单（type=menu 排序最前）
+      // 中台首页：优先取 catalog 下第一个「叶子菜单」（有子菜单的目录节点本身没有页面路由，直接进入会 404）
       const allChildren = collectFlat(catalog).filter((c) => c.type === 'menu')
-      const home = allChildren.sort((a, b) => a.sort - b.sort)[0]?.path ?? catalog.path
+      const leafMenus = allChildren.filter(
+        (c) => !(c.children ?? []).some((ch) => ch.type === 'menu'),
+      )
+      const home =
+        (leafMenus.length > 0 ? leafMenus : allChildren).sort((a, b) => a.sort - b.sort)[0]?.path ??
+        catalog.path
       // 侧边栏菜单：catalog 下的直接子级（递归过滤按钮/接口）
       const menus = catalog.children
         ?.filter((c) => c.type !== 'button' && c.type !== 'api')
@@ -217,7 +219,7 @@ export function buildSystems(resourceTree: ResourceNode[]): SystemMeta[] {
       }
     })
 
-  const onlinePaths = new Set(online.map((s) => `/s.routeKey`))
+  const onlinePaths = new Set(online.map((s) => `/${s.routeKey}`))
   const building = BUILDING_PATH_PREFIXES
     .filter((p) => !onlinePaths.has(p))
     .map<SystemMeta>((p) => {
