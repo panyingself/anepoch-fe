@@ -39,10 +39,7 @@
       <span v-for="i in 12" :key="`l-${i}`" class="leaf" :style="leafStyle(i)" />
     </template>
 
-    <!-- 基础主题：柔光方块缓慢漂移 -->
-    <template v-else>
-      <span v-for="i in 10" :key="`d-${i}`" class="drift" :style="driftStyle(i)" />
-    </template>
+    <!-- 基础主题：干净清新，无氛围动效 -->
   </div>
 </template>
 
@@ -137,18 +134,6 @@ function leafStyle(i: number): CSSProperties {
   }
 }
 
-// ---------- 基础 ----------
-function driftStyle(i: number): CSSProperties {
-  const size = rnd(i, 90, 180)
-  return {
-    left: `${rnd(i, 2, 88)}%`,
-    top: `${rnd(i, 4, 82)}%`,
-    width: `${size}px`,
-    height: `${size}px`,
-    animationDelay: `${rnd(i, 0, 8)}s`,
-    animationDuration: `${rnd(i, 18, 26)}s`,
-  }
-}
 </script>
 
 <style scoped lang="less">
@@ -353,14 +338,6 @@ function driftStyle(i: number): CSSProperties {
   }
 }
 
-/* ====== 基础 ====== */
-.drift {
-  position: absolute;
-  border-radius: 22px;
-  background: linear-gradient(135deg, rgba(22, 119, 255, 0.05), rgba(105, 177, 255, 0.03));
-  animation: drift-box ease-in-out infinite alternate;
-}
-
 /* ====== 动画 ====== */
 @keyframes twinkle {
   from {
@@ -496,15 +473,6 @@ function driftStyle(i: number): CSSProperties {
   100% {
     transform: translate(-3vw, 108vh) rotate(540deg);
     opacity: 0;
-  }
-}
-
-@keyframes drift-box {
-  from {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  to {
-    transform: translate(44px, -30px) rotate(8deg);
   }
 }
 </style>

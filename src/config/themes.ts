@@ -252,7 +252,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
       '--down-bg': 'rgba(255, 77, 90, 0.12)',
       '--accent-bg': 'rgba(22, 119, 255, 0.08)',
       '--accent-border': 'rgba(22, 119, 255, 0.3)',
-      '--banner-bg': 'linear-gradient(135deg, #e6f0ff 0%, #f5f7fa 100%)',
+      '--banner-bg': '#f0f7ff',
       '--grid-line': '#f0f0f0',
       '--bar-fill': 'linear-gradient(180deg, #1677ff 0%, #69b1ff 100%)',
       '--bar-fill-hover': 'linear-gradient(180deg, #4096ff 0%, #8cc5ff 100%)',

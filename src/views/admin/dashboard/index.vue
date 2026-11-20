@@ -480,4 +480,107 @@ onMounted(async () => {
     }
   }
 }
+
+/* ====== 基础主题：干净清新，纯色背景、无可见阴影与底纹 ====== */
+:global(.theme-basic) .dashboard-page {
+  .welcome-card {
+    :deep(.ant-card-body) {
+      background: var(--banner-bg);
+      border: 1px solid var(--line);
+    }
+
+    .welcome-inner {
+      .welcome-avatar {
+        border-color: #fff;
+        box-shadow: none;
+      }
+
+      .welcome-text {
+        h2 {
+          color: var(--text-main);
+        }
+
+        p {
+          color: var(--text-sub);
+        }
+      }
+
+      .welcome-date {
+        .date-main {
+          color: var(--text-main);
+        }
+
+        .date-week {
+          color: var(--text-sub);
+        }
+      }
+    }
+  }
+
+  .stat-row .stat-card {
+    &:hover {
+      box-shadow: none;
+    }
+
+    .stat-body .stat-main {
+      .stat-title {
+        color: var(--text-sub);
+      }
+
+      .stat-num :deep(.ant-statistic-content) {
+        color: var(--text-main);
+      }
+
+      .stat-trend {
+        em {
+          color: var(--text-sub);
+        }
+
+        &.up {
+          color: var(--up-text);
+          background: var(--up-bg);
+        }
+
+        &.down {
+          color: var(--down-text);
+          background: var(--down-bg);
+        }
+      }
+    }
+  }
+
+  .bar-chart .bar-item {
+    .bar-value,
+    .bar-label {
+      color: var(--text-sub);
+    }
+
+    .bar-track {
+      background-image: none;
+
+      .bar-fill {
+        background: var(--bar-fill);
+        box-shadow: none;
+
+        &:hover {
+          background: var(--bar-fill-hover);
+        }
+      }
+    }
+  }
+
+  .status-list .status-item .status-count {
+    color: var(--text-sub);
+  }
+}
+
+:global(.theme-basic) .soft-tag {
+  color: var(--icon-hover);
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+}
+
+:global(.theme-basic) .more-link {
+  color: var(--icon-hover);
+}
 </style>
