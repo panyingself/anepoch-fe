@@ -481,10 +481,13 @@ onMounted(async () => {
   }
 }
 
-/* ====== 基础主题：干净清新，纯色背景、无可见阴影与底纹 ====== */
-:global(.theme-basic) .dashboard-page {
+</style>
+
+<!-- 基础主题专属：干净清新，纯色/极浅背景，无可见阴影与底纹（不影响其他主题） -->
+<style lang="less">
+.theme-basic .dashboard-page {
   .welcome-card {
-    :deep(.ant-card-body) {
+    .ant-card-body {
       background: var(--banner-bg);
       border: 1px solid var(--line);
     }
@@ -495,57 +498,36 @@ onMounted(async () => {
         box-shadow: none;
       }
 
-      .welcome-text {
-        h2 {
-          color: var(--text-main);
-        }
-
-        p {
-          color: var(--text-sub);
-        }
+      .welcome-text h2 {
+        color: var(--text-main);
       }
 
-      .welcome-date {
-        .date-main {
-          color: var(--text-main);
-        }
+      .welcome-text p {
+        color: var(--text-sub);
+      }
 
-        .date-week {
-          color: var(--text-sub);
-        }
+      .welcome-date .date-main {
+        color: var(--text-main);
+      }
+
+      .welcome-date .date-week {
+        color: var(--text-sub);
       }
     }
   }
 
-  .stat-row .stat-card {
-    &:hover {
-      box-shadow: none;
+  .stat-row .stat-card:hover {
+    box-shadow: none;
+  }
+
+  .stat-row .stat-card .stat-body .stat-main {
+    .stat-title,
+    .stat-trend em {
+      color: var(--text-sub);
     }
 
-    .stat-body .stat-main {
-      .stat-title {
-        color: var(--text-sub);
-      }
-
-      .stat-num :deep(.ant-statistic-content) {
-        color: var(--text-main);
-      }
-
-      .stat-trend {
-        em {
-          color: var(--text-sub);
-        }
-
-        &.up {
-          color: var(--up-text);
-          background: var(--up-bg);
-        }
-
-        &.down {
-          color: var(--down-text);
-          background: var(--down-bg);
-        }
-      }
+    .stat-num .ant-statistic-content {
+      color: var(--text-main);
     }
   }
 
@@ -557,14 +539,14 @@ onMounted(async () => {
 
     .bar-track {
       background-image: none;
+    }
 
-      .bar-fill {
-        background: var(--bar-fill);
-        box-shadow: none;
+    .bar-track .bar-fill {
+      background: var(--bar-fill);
+      box-shadow: none;
 
-        &:hover {
-          background: var(--bar-fill-hover);
-        }
+      &:hover {
+        background: var(--bar-fill-hover);
       }
     }
   }
@@ -572,15 +554,15 @@ onMounted(async () => {
   .status-list .status-item .status-count {
     color: var(--text-sub);
   }
-}
 
-:global(.theme-basic) .soft-tag {
-  color: var(--icon-hover);
-  background: var(--accent-bg);
-  border-color: var(--accent-border);
-}
+  .soft-tag {
+    color: var(--icon-hover);
+    background: var(--accent-bg);
+    border-color: var(--accent-border);
+  }
 
-:global(.theme-basic) .more-link {
-  color: var(--icon-hover);
+  .more-link {
+    color: var(--icon-hover);
+  }
 }
 </style>

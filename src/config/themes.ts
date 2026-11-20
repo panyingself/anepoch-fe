@@ -17,7 +17,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
   /** 星空主题：深空蓝 + 蓝青霓虹（与门户/登录页同源） */
   starry: {
     id: 'starry',
-    name: '星空主题',
+    name: '星空',
     swatch: 'linear-gradient(135deg, #4d9fff, #22d3ee)',
     antd: {
       algorithm: antdTheme.darkAlgorithm,
@@ -151,7 +151,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
   /** 七彩梦幻泡沫主题：浅底高饱和糖果色 */
   bubble: {
     id: 'bubble',
-    name: '七彩梦幻泡沫',
+    name: '梦幻泡沫',
     swatch: 'linear-gradient(135deg, #38bdf8, #c026d3, #fb7185)',
     antd: {
       algorithm: antdTheme.defaultAlgorithm,
@@ -217,7 +217,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
   /** 基础主题：经典浅色后台 */
   basic: {
     id: 'basic',
-    name: '基础主题',
+    name: '默认',
     swatch: 'linear-gradient(135deg, #1677ff, #69b1ff)',
     antd: {
       algorithm: antdTheme.defaultAlgorithm,
@@ -252,7 +252,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
       '--down-bg': 'rgba(255, 77, 90, 0.12)',
       '--accent-bg': 'rgba(22, 119, 255, 0.08)',
       '--accent-border': 'rgba(22, 119, 255, 0.3)',
-      '--banner-bg': '#f0f7ff',
+      '--banner-bg': 'linear-gradient(135deg, #f0f7ff 0%, #f5f7fa 100%)',
       '--grid-line': '#f0f0f0',
       '--bar-fill': 'linear-gradient(180deg, #1677ff 0%, #69b1ff 100%)',
       '--bar-fill-hover': 'linear-gradient(180deg, #4096ff 0%, #8cc5ff 100%)',
@@ -262,7 +262,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
   /** 画墨主题：浓墨宣纸 + 朱砂点缀 */
   ink: {
     id: 'ink',
-    name: '画墨主题',
+    name: '画墨',
     swatch: 'linear-gradient(135deg, #3e3a33, #a8433a)',
     antd: {
       algorithm: antdTheme.defaultAlgorithm,
@@ -328,7 +328,7 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
   /** 宝石绿主题：浓翠祖母绿 */
   emerald: {
     id: 'emerald',
-    name: '宝石绿主题',
+    name: '宝石绿',
     swatch: 'linear-gradient(135deg, #059669, #34d399)',
     antd: {
       algorithm: antdTheme.defaultAlgorithm,
@@ -392,8 +392,15 @@ export const THEMES: Record<ThemeId, ThemeMeta> = {
   },
 }
 
-export const THEME_LIST: ThemeMeta[] = Object.values(THEMES)
+export const THEME_LIST: ThemeMeta[] = [
+  THEMES.basic,
+  THEMES.ink,
+  THEMES.emerald,
+  THEMES.starry,
+  THEMES.nebula,
+  THEMES.bubble,
+]
 
 export function getTheme(id: string): ThemeMeta {
-  return THEMES[id as ThemeId] ?? THEMES.starry
+  return THEMES[id as ThemeId] ?? THEMES.basic
 }

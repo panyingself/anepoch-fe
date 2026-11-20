@@ -2,7 +2,7 @@
   <div class="ambient">
     <!-- 星空主题：闪烁星星 + 流星 + 深空光球 -->
     <template v-if="mode === 'starry'">
-      <span v-for="i in 28" :key="`s-${i}`" class="star" :style="starStyle(i)" />
+      <span v-for="i in 64" :key="`s-${i}`" class="star" :style="starStyle(i)" />
       <span v-for="i in 10" :key="`m-${i}`" class="meteor" :style="meteorStyle(i)" />
       <span class="orb o-blue" />
       <span class="orb o-cyan" />
@@ -56,16 +56,22 @@ function rnd(i: number, min: number, max: number) {
   return min + (((i * 137 + 41) % 100) / 100) * (max - min)
 }
 
+/** 正弦哈希：生成无规律的确定性散点，避免线性取模形成斜线/网格 */
+function hash(i: number, seed: number) {
+  const v = Math.sin(i * 12.9898 + seed * 78.233) * 43758.5453
+  return v - Math.floor(v)
+}
+
 // ---------- 星空 ----------
 function starStyle(i: number): CSSProperties {
-  const size = rnd(i, 1.5, 3)
+  const size = 1.2 + hash(i, 4) * 2.2
   return {
-    left: `${rnd(i, 0, 100)}%`,
-    top: `${rnd(i, 0, 100)}%`,
+    left: `${hash(i, 1) * 100}%`,
+    top: `${hash(i, 2) * 100}%`,
     width: `${size}px`,
     height: `${size}px`,
-    animationDelay: `${rnd(i, 0, 5)}s`,
-    animationDuration: `${rnd(i, 2.2, 5)}s`,
+    animationDelay: `${hash(i, 3) * 5}s`,
+    animationDuration: `${2.2 + hash(i, 5) * 3.3}s`,
   }
 }
 
