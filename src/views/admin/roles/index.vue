@@ -100,7 +100,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
-import { fetchRoles, createRole, updateRole, deleteRole } from '@/api/admin/role'
+import { fetchRoles, addRole, editRoleById, removeRole } from '@/api/admin/role'
 import type { RoleItem, RolePayload } from '@/api/admin/role'
 import { fetchResourceTree, fetchRoleResourceIds, assignRoleResources } from '@/api/admin/resource'
 import type { ResourceNode } from '@/api/admin/resource'
@@ -173,11 +173,11 @@ async function handleSubmit() {
   submitting.value = true
   try {
     if (editing.value) {
-      await updateRole({ ...formState })
+      await editRoleById({ ...formState })
       message.success('更新成功')
     } else {
       const { id: _id, ...payload } = formState
-      await createRole(payload as RolePayload)
+      await addRole(payload as RolePayload)
       message.success('创建成功')
     }
     modalOpen.value = false
@@ -191,7 +191,7 @@ async function handleSubmit() {
 
 async function onDelete(record: RoleItem) {
   try {
-    await deleteRole(record.id)
+    await removeRole(record.id)
     message.success('删除成功')
     loadList()
   } catch (err) {

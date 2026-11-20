@@ -147,9 +147,9 @@ import {
 } from '@ant-design/icons-vue'
 import {
   fetchResourceTree,
-  createResource,
-  updateResource,
-  deleteResource,
+  addResource,
+  editResourceById,
+  removeResource,
   RESOURCE_TYPE_MAP,
 } from '@/api/admin/resource'
 import type { ResourceNode, ResourcePayload, ResourceType } from '@/api/admin/resource'
@@ -278,10 +278,10 @@ async function handleSubmit() {
   submitting.value = true
   try {
     if (editing.value) {
-      await updateResource({ ...formState })
+      await editResourceById({ ...formState })
       message.success('更新成功')
     } else {
-      await createResource({ ...formState })
+      await addResource({ ...formState })
       message.success('创建成功')
     }
     modalOpen.value = false
@@ -295,7 +295,7 @@ async function handleSubmit() {
 
 async function onDelete(record: ResourceNode) {
   try {
-    await deleteResource(record.id)
+    await removeResource(record.id)
     message.success('删除成功')
     loadList()
   } catch (err) {

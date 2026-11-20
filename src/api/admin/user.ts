@@ -28,22 +28,29 @@ export interface UserQuery {
   status?: number
 }
 
-/** GET /api/admin/users */
+/** GET /api/admin/users/pageList */
 export function fetchUsers(query: UserQuery): Promise<PageResult<UserItem>> {
-  return get<PageResult<UserItem>>('/admin/users', { params: query })
+  return get<PageResult<UserItem>>('/admin/users/pageList', { params: query })
 }
 
-/** POST /api/admin/users（后端使用初始密码 123456，无需前端传密码） */
-export function createUser(payload: UserPayload): Promise<void> {
-  return post<void>('/admin/users', payload)
+/** POST /api/admin/users（后端 add 方法，使用初始密码 123456，无需前端传密码） */
+export function addUser(payload: UserPayload): Promise<void> {
+  return post<void>('/admin/users/add', payload)
 }
 
-/** PUT /api/admin/users（需带 id） */
-export function updateUser(payload: UserPayload): Promise<void> {
-  return put<void>('/admin/users', payload)
+/** PUT /api/admin/users（后端 editById 方法，需带 id） */
+export function editUserById(payload: UserPayload): Promise<void> {
+  return put<void>('/admin/users/editById', payload)
 }
 
-/** DELETE /api/admin/users?id= */
-export function deleteUser(id: number): Promise<void> {
-  return del<void>('/admin/users', { params: { id } })
+/** DELETE /api/admin/users?id=（后端 remove 方法） */
+export function removeUser(id: number): Promise<void> {
+  return del<void>('/admin/users/remove', { params: { id } })
 }
+
+/** @deprecated 请使用 addUser */
+export const createUser = addUser
+/** @deprecated 请使用 editUserById */
+export const updateUser = editUserById
+/** @deprecated 请使用 removeUser */
+export const deleteUser = removeUser

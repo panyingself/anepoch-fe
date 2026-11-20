@@ -40,20 +40,27 @@ export async function fetchDeptTree(): Promise<DeptNode[]> {
   return data
 }
 
-/** POST /api/admin/depts（parentId 为 null 表示根节点） */
-export function createDept(payload: DeptPayload): Promise<void> {
-  return post<void>('/admin/depts', payload)
+/** POST /api/admin/depts/add（后端 add 方法，parentId 为 null 表示根节点） */
+export function addDept(payload: DeptPayload): Promise<void> {
+  return post<void>('/admin/depts/add', payload)
 }
 
-/** PUT /api/admin/depts（需带 id，后端负责防环校验） */
-export function updateDept(payload: DeptPayload): Promise<void> {
-  return put<void>('/admin/depts', payload)
+/** PUT /api/admin/depts/editById（后端 editById 方法，需带 id，负责防环校验） */
+export function editDeptById(payload: DeptPayload): Promise<void> {
+  return put<void>('/admin/depts/editById', payload)
 }
 
-/** DELETE /api/admin/depts?id=（存在下级组织时后端拒绝） */
-export function deleteDept(id: number): Promise<void> {
-  return del<void>('/admin/depts', { params: { id } })
+/** DELETE /api/admin/depts/remove?id=（后端 remove 方法，存在下级组织时后端拒绝） */
+export function removeDept(id: number): Promise<void> {
+  return del<void>('/admin/depts/remove', { params: { id } })
 }
+
+/** @deprecated 请使用 addDept */
+export const createDept = addDept
+/** @deprecated 请使用 editDeptById */
+export const updateDept = editDeptById
+/** @deprecated 请使用 removeDept */
+export const deleteDept = removeDept
 
 /** 构建上级组织树选择数据（编辑时排除自身及其子树） */
 export function buildDeptOptions(excludeId?: number): DeptOption[] {
@@ -122,18 +129,23 @@ export interface DeptMember {
   status: 0 | 1 // 1 在职 0 离职
 }
 
-/** GET /api/admin/depts/{id}/members */
+/** GET /api/admin/depts/{id}/members/listMembers */
 export function fetchDeptMembers(deptId: number): Promise<DeptMember[]> {
-  return get<DeptMember[]>(`/admin/depts/${deptId}/members`)
+  return get<DeptMember[]>(`/admin/depts/${deptId}/members/listMembers`)
 }
 
-/** POST /api/admin/depts/{id}/members（对齐 DeptMemberSaveRequest，不含 deptId） */
-export function createDeptMember(payload: Omit<DeptMember, 'id'>): Promise<void> {
+/** POST /api/admin/depts/{id}/members/addMember（后端 addMember 方法，对齐 DeptMemberSaveRequest，不含 deptId） */
+export function addDeptMember(payload: Omit<DeptMember, 'id'>): Promise<void> {
   const { deptId, ...body } = payload
-  return post<void>(`/admin/depts/${deptId}/members`, body)
+  return post<void>(`/admin/depts/${deptId}/members/addMember`, body)
 }
 
-/** DELETE /api/admin/dept-members/{memberId} */
-export function deleteDeptMember(id: number): Promise<void> {
-  return del<void>(`/admin/dept-members/${id}`)
+/** DELETE /api/admin/dept-members/{memberId}/removeMember（后端 removeMember 方法） */
+export function removeDeptMember(id: number): Promise<void> {
+  return del<void>(`/admin/dept-members/${id}/removeMember`)
 }
+
+/** @deprecated 请使用 addDeptMember */
+export const createDeptMember = addDeptMember
+/** @deprecated 请使用 removeDeptMember */
+export const deleteDeptMember = removeDeptMember

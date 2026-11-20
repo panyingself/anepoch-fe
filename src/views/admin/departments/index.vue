@@ -243,14 +243,14 @@ import type { FormInstance } from 'ant-design-vue'
 import { PlusOutlined, PlusCircleOutlined, EditOutlined, DeleteOutlined, UserAddOutlined } from '@ant-design/icons-vue'
 import {
   fetchDeptTree,
-  createDept,
-  updateDept,
-  deleteDept,
+  addDept,
+  editDeptById,
+  removeDept,
   buildDeptOptions,
   flattenDeptNames,
   fetchDeptMembers,
-  createDeptMember,
-  deleteDeptMember,
+  addDeptMember,
+  removeDeptMember,
 } from '@/api/admin/dept'
 import type { DeptNode, DeptPayload, DeptOption, DeptMember } from '@/api/admin/dept'
 
@@ -363,10 +363,10 @@ async function handleSubmit() {
   submitting.value = true
   try {
     if (editing.value) {
-      await updateDept({ ...formState })
+      await editDeptById({ ...formState })
       message.success('更新成功')
     } else {
-      await createDept({ ...formState })
+      await addDept({ ...formState })
       message.success('创建成功')
     }
     modalOpen.value = false
@@ -380,7 +380,7 @@ async function handleSubmit() {
 
 async function onDelete(record: DeptNode) {
   try {
-    await deleteDept(record.id)
+    await removeDept(record.id)
     message.success('删除成功')
     if (selected.value?.id === record.id) {
       selected.value = null
@@ -461,7 +461,7 @@ async function handleMemberSubmit() {
   if (!memberTarget.value) return
   memberSubmitting.value = true
   try {
-    await createDeptMember({ ...memberForm, deptId: memberTarget.value.id })
+    await addDeptMember({ ...memberForm, deptId: memberTarget.value.id })
     message.success('成员已添加')
     memberModalOpen.value = false
     // 目标组织在当前选中组织的子树内时刷新（成员列表含下级组织成员）
@@ -477,7 +477,7 @@ async function handleMemberSubmit() {
 
 async function onDeleteMember(record: DeptMember) {
   try {
-    await deleteDeptMember(record.id)
+    await removeDeptMember(record.id)
     message.success('已移除')
     loadMembers()
   } catch (err) {

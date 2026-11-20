@@ -166,7 +166,7 @@ import { message } from 'ant-design-vue'
 import type { TableProps } from 'ant-design-vue'
 import type { FormInstance } from 'ant-design-vue'
 import { SearchOutlined, ReloadOutlined, PlusOutlined } from '@ant-design/icons-vue'
-import { fetchUsers, createUser, updateUser, deleteUser } from '@/api/admin/user'
+import { fetchUsers, addUser, editUserById, removeUser } from '@/api/admin/user'
 import type { UserItem, UserPayload } from '@/api/admin/user'
 import { fetchDeptTree, buildDeptOptions } from '@/api/admin/dept'
 import type { DeptOption } from '@/api/admin/dept'
@@ -290,11 +290,11 @@ async function handleSubmit() {
   submitting.value = true
   try {
     if (editing.value) {
-      await updateUser({ ...formState })
+      await editUserById({ ...formState })
       message.success('更新成功')
     } else {
       const { id: _id, ...payload } = formState
-      await createUser(payload as UserPayload)
+      await addUser(payload as UserPayload)
       message.success('创建成功')
     }
     modalOpen.value = false
@@ -309,7 +309,7 @@ async function handleSubmit() {
 async function onToggleStatus(record: UserItem) {
   const next = record.status === 1 ? 0 : 1
   try {
-    await updateUser({ ...record, status: next })
+    await editUserById({ ...record, status: next })
     record.status = next
     message.success(next === 1 ? '已启用' : '已禁用')
   } catch (err) {
@@ -319,7 +319,7 @@ async function onToggleStatus(record: UserItem) {
 
 async function onDelete(record: UserItem) {
   try {
-    await deleteUser(record.id)
+    await removeUser(record.id)
     message.success('删除成功')
     if (list.value.length === 1 && query.page > 1) {
       query.page -= 1

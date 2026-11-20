@@ -35,20 +35,27 @@ export function fetchResourceTree(): Promise<ResourceNode[]> {
   return get<ResourceNode[]>('/admin/resources/tree')
 }
 
-/** POST /api/admin/resources（按钮/接口层级下后端拒绝新增） */
-export function createResource(payload: ResourcePayload): Promise<void> {
-  return post<void>('/admin/resources', payload)
+/** POST /api/admin/resources/add（后端 add 方法，按钮/接口层级下后端拒绝新增） */
+export function addResource(payload: ResourcePayload): Promise<void> {
+  return post<void>('/admin/resources/add', payload)
 }
 
-/** PUT /api/admin/resources（需带 id，后端负责防环与层级校验） */
-export function updateResource(payload: ResourcePayload): Promise<void> {
-  return put<void>('/admin/resources', payload)
+/** PUT /api/admin/resources/editById（后端 editById 方法，需带 id，负责防环与层级校验） */
+export function editResourceById(payload: ResourcePayload): Promise<void> {
+  return put<void>('/admin/resources/editById', payload)
 }
 
-/** DELETE /api/admin/resources?id= */
-export function deleteResource(id: number): Promise<void> {
-  return del<void>('/admin/resources', { params: { id } })
+/** DELETE /api/admin/resources/remove?id=（后端 remove 方法） */
+export function removeResource(id: number): Promise<void> {
+  return del<void>('/admin/resources/remove', { params: { id } })
 }
+
+/** @deprecated 请使用 addResource */
+export const createResource = addResource
+/** @deprecated 请使用 editResourceById */
+export const updateResource = editResourceById
+/** @deprecated 请使用 removeResource */
+export const deleteResource = removeResource
 
 /** GET /api/admin/roles/{id}/resource-ids：角色已分配的资源 id 集合 */
 export function fetchRoleResourceIds(roleId: number): Promise<number[]> {
