@@ -19,7 +19,7 @@
       <span class="rainbow-mist rm-1" />
       <span class="rainbow-mist rm-2" />
       <span class="rainbow-mist rm-3" />
-      <span v-for="i in 16" :key="`c-${i}`" class="candy" :style="candyStyle(i)" />
+      <span v-for="i in 28" :key="`c-${i}`" class="candy" :style="candyStyle(i)" />
     </template>
 
     <!-- 画墨：远山 + 飞雁 -->
@@ -133,17 +133,17 @@ const candyPalette: Array<[string, string]> = [
 ]
 
 function candyStyle(i: number): CSSProperties {
-  const size = rnd(i, 26, 64)
+  const size = 22 + hash(i, 15) * 42
   const [c1, c2] = candyPalette[(i - 1) % candyPalette.length]
   return {
-    left: `${rnd(i, 3, 92)}%`,
-    top: `${rnd(i, 8, 78)}%`,
+    left: `${hash(i, 16) * 100}%`,
+    top: `${hash(i, 17) * 100}%`,
     width: `${size}px`,
     height: `${size}px`,
     '--c1': c1,
     '--c2': c2,
-    animationDelay: `${rnd(i, 0, 8)}s`,
-    animationDuration: `${rnd(i, 9, 16)}s`,
+    animationDelay: `${hash(i, 18) * 8}s`,
+    animationDuration: `${9 + hash(i, 19) * 7}s`,
   } as CSSProperties
 }
 
@@ -246,7 +246,7 @@ function leafStyle(i: number): CSSProperties {
   height: 320px;
   border-radius: 50%;
   filter: blur(80px);
-  opacity: 0.35;
+  opacity: 0.22;
   animation: mist-drift 14s ease-in-out infinite alternate;
 
   &.rm-1 {
@@ -277,7 +277,7 @@ function leafStyle(i: number): CSSProperties {
   box-shadow:
     0 10px 26px -8px var(--c2),
     inset 0 0 14px rgba(255, 255, 255, 0.4);
-  opacity: 0.85;
+  opacity: 0.6;
   animation: candy-float ease-in-out infinite alternate;
 }
 

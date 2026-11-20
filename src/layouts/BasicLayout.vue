@@ -234,6 +234,14 @@ const onThemeClick: MenuProps['onClick'] = ({ key }) => {
   filter: drop-shadow(0 0 6px rgba(192, 38, 211, 0.55));
 }
 
+/* 梦幻泡沫：内容层级高于氛围气泡，避免遮挡文字与卡片 */
+.theme-bubble .sider,
+.theme-bubble .header,
+.theme-bubble .content-main {
+  position: relative;
+  z-index: 910;
+}
+
 .header {
   display: flex;
   align-items: center;
