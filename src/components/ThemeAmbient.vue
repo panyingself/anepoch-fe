@@ -24,18 +24,14 @@
       <span v-for="i in 16" :key="`c-${i}`" class="candy" :style="candyStyle(i)" />
     </template>
 
-    <!-- 画墨：远山 + 飞鸟 + 涟漪 + 淡墨团 -->
+    <!-- 画墨：远山 + 飞雁 -->
     <template v-else-if="mode === 'ink'">
       <span class="mountain mt-1" />
       <span class="mountain mt-2" />
-      <span v-for="i in 5" :key="`b-${i}`" class="bird" :style="birdStyle(i)">
+      <span v-for="i in 11" :key="`b-${i}`" class="bird" :style="birdStyle(i)">
         <i class="wing wl" />
         <i class="wing wr" />
       </span>
-      <span v-for="i in 4" :key="`rp-${i}`" class="ripple" :style="rippleStyle(i)" />
-      <span class="ink-blot ib-1" />
-      <span class="ink-blot ib-2" />
-      <span class="ink-blot ib-3" />
     </template>
 
     <!-- 宝石绿：仅保留树叶飘落 -->
@@ -126,17 +122,9 @@ function candyStyle(i: number): CSSProperties {
 // ---------- 画墨 ----------
 function birdStyle(i: number): CSSProperties {
   return {
-    top: `${rnd(i, 8, 30)}%`,
-    animationDelay: `${rnd(i, 0, 20)}s`,
-    animationDuration: `${rnd(i, 32, 46)}s`,
-  }
-}
-
-function rippleStyle(i: number): CSSProperties {
-  return {
-    left: `${rnd(i, 8, 88)}%`,
-    top: `${rnd(i, 45, 80)}%`,
-    animationDelay: `${rnd(i, 0, 6)}s`,
+    top: `${rnd(i, 6, 38)}%`,
+    animationDelay: `${rnd(i, 0, 30)}s`,
+    animationDuration: `${rnd(i, 30, 48)}s`,
   }
 }
 
@@ -319,6 +307,7 @@ function driftStyle(i: number): CSSProperties {
   }
 }
 
+/* ====== 画墨飞雁 ====== */
 .bird {
   position: absolute;
   left: -40px;
@@ -345,46 +334,6 @@ function driftStyle(i: number): CSSProperties {
     right: 0;
     transform-origin: left bottom;
     animation: flap 0.9s ease-in-out infinite alternate-reverse;
-  }
-}
-
-.ripple {
-  position: absolute;
-  width: 90px;
-  height: 90px;
-  border: 1px solid rgba(62, 58, 51, 0.28);
-  border-radius: 50%;
-  animation: ripple-go 4.5s ease-out infinite;
-}
-
-.ink-blot {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(24px);
-  background: rgba(62, 58, 51, 0.06);
-  animation: blot-drift 18s ease-in-out infinite alternate;
-
-  &.ib-1 {
-    left: 6%;
-    top: 14%;
-    width: 180px;
-    height: 130px;
-  }
-
-  &.ib-2 {
-    right: 10%;
-    top: 34%;
-    width: 140px;
-    height: 110px;
-    animation-delay: -6s;
-  }
-
-  &.ib-3 {
-    left: 40%;
-    bottom: 12%;
-    width: 200px;
-    height: 120px;
-    animation-delay: -12s;
   }
 }
 
@@ -527,26 +476,6 @@ function driftStyle(i: number): CSSProperties {
   }
   to {
     transform: translateX(115vw);
-  }
-}
-
-@keyframes ripple-go {
-  0% {
-    transform: scale(0.25);
-    opacity: 0.6;
-  }
-  100% {
-    transform: scale(1.15);
-    opacity: 0;
-  }
-}
-
-@keyframes blot-drift {
-  from {
-    transform: translate(0, 0);
-  }
-  to {
-    transform: translate(36px, -26px);
   }
 }
 
