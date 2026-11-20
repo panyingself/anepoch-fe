@@ -10,9 +10,7 @@
 
     <!-- 炫彩星空：极光 + 瀑布流星雨 -->
     <template v-else-if="mode === 'nebula'">
-      <span class="aurora au-pink" />
-      <span class="aurora au-violet" />
-      <span class="aurora au-blue" />
+      <span v-for="i in 42" :key="`n-${i}`" class="nebula-cloud" :style="cloudStyle(i)" />
       <span v-for="i in 14" :key="`r-${i}`" class="rain" :style="rainStyle(i)" />
     </template>
 
@@ -85,7 +83,34 @@ function meteorStyle(i: number): CSSProperties {
 }
 
 // ---------- 炫彩星空：瀑布流星雨 ----------
-const rainColors = ['#ff9ff3', '#c4b5fd', '#93c5fd']
+const rainColors = ['#ffb3f0', '#8ee9ff', '#9dffd9', '#c4b5fd']
+
+const cloudPalette: Array<[string, string]> = [
+  ['rgba(255, 122, 220, 0.9)', 'rgba(255, 90, 200, 0.45)'],
+  ['rgba(186, 140, 255, 0.9)', 'rgba(150, 100, 255, 0.45)'],
+  ['rgba(110, 224, 255, 0.9)', 'rgba(79, 200, 255, 0.45)'],
+  ['rgba(140, 255, 220, 0.85)', 'rgba(111, 240, 201, 0.4)'],
+  ['rgba(255, 160, 235, 0.85)', 'rgba(196, 120, 255, 0.4)'],
+]
+
+/** 小型星云：随机位置/尺寸/色相/漂移方向，全局缓慢游动 */
+function cloudStyle(i: number): CSSProperties {
+  const size = 48 + hash(i, 9) * 62
+  const [c1, c2] = cloudPalette[(i - 1) % cloudPalette.length]
+  return {
+    left: `${hash(i, 7) * 100}%`,
+    top: `${hash(i, 8) * 100}%`,
+    width: `${size}px`,
+    height: `${size}px`,
+    '--c1': c1,
+    '--c2': c2,
+    '--dx': `${(hash(i, 10) - 0.5) * 260}px`,
+    '--dy': `${(hash(i, 11) - 0.5) * 220}px`,
+    '--ds': `${0.85 + hash(i, 12) * 0.5}`,
+    animationDuration: `${8 + hash(i, 13) * 6}s`,
+    animationDelay: `-${hash(i, 14) * 12}s`,
+  } as CSSProperties
+}
 
 function rainStyle(i: number): CSSProperties {
   return {
@@ -195,34 +220,14 @@ function leafStyle(i: number): CSSProperties {
 }
 
 /* ====== 炫彩星空 ====== */
-.aurora {
+.nebula-cloud {
   position: absolute;
-  width: 560px;
-  height: 220px;
   border-radius: 50%;
-  filter: blur(70px);
-  opacity: 0.42;
-  animation: aurora-drift 14s ease-in-out infinite alternate;
-
-  &.au-pink {
-    left: -6%;
-    top: -6%;
-    background: rgba(255, 121, 198, 0.4);
-  }
-
-  &.au-violet {
-    right: -8%;
-    top: 8%;
-    background: rgba(167, 139, 250, 0.36);
-    animation-delay: -5s;
-  }
-
-  &.au-blue {
-    left: 30%;
-    bottom: -10%;
-    background: rgba(96, 165, 250, 0.3);
-    animation-delay: -9s;
-  }
+  filter: blur(18px);
+  opacity: 0.72;
+  mix-blend-mode: screen;
+  background: radial-gradient(closest-side, var(--c1) 0%, var(--c2) 45%, transparent 80%);
+  animation: nebula-float ease-in-out infinite alternate;
 }
 
 .rain {
@@ -382,12 +387,12 @@ function leafStyle(i: number): CSSProperties {
   }
 }
 
-@keyframes aurora-drift {
+@keyframes nebula-float {
   from {
     transform: translate(0, 0) scale(1);
   }
   to {
-    transform: translate(60px, 30px) scale(1.12);
+    transform: translate(var(--dx), var(--dy)) scale(var(--ds));
   }
 }
 

@@ -227,7 +227,7 @@ const onThemeClick: MenuProps['onClick'] = ({ key }) => {
 }
 
 .theme-nebula .logo-icon {
-  filter: drop-shadow(0 0 6px rgba(181, 123, 255, 0.65));
+  filter: drop-shadow(0 0 6px rgba(79, 214, 255, 0.65));
 }
 
 .theme-bubble .logo-icon {
