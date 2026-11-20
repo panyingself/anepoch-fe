@@ -38,12 +38,9 @@
       <span class="ink-blot ib-3" />
     </template>
 
-    <!-- 宝石绿：晨光光柱 + 落叶 + 萤光 -->
+    <!-- 宝石绿：仅保留树叶飘落 -->
     <template v-else-if="mode === 'emerald'">
-      <span class="beam bm-1" />
-      <span class="beam bm-2" />
       <span v-for="i in 12" :key="`l-${i}`" class="leaf" :style="leafStyle(i)" />
-      <span v-for="i in 22" :key="`f-${i}`" class="firefly" :style="fireflyStyle(i)" />
     </template>
 
     <!-- 基础主题：柔光方块缓慢漂移 -->
@@ -149,15 +146,6 @@ function leafStyle(i: number): CSSProperties {
     left: `${rnd(i, 2, 96)}%`,
     animationDelay: `${rnd(i, 0, 10)}s`,
     animationDuration: `${rnd(i, 9, 16)}s`,
-  }
-}
-
-function fireflyStyle(i: number): CSSProperties {
-  return {
-    left: `${rnd(i, 2, 96)}%`,
-    top: `${rnd(i, 5, 92)}%`,
-    animationDelay: `${rnd(i, 0, 4)}s`,
-    animationDuration: `${rnd(i, 3, 6)}s`,
   }
 }
 
@@ -401,26 +389,6 @@ function driftStyle(i: number): CSSProperties {
 }
 
 /* ====== 宝石绿 ====== */
-.beam {
-  position: absolute;
-  top: -10%;
-  width: 160px;
-  height: 120%;
-  background: linear-gradient(180deg, rgba(52, 211, 153, 0) 0%, rgba(52, 211, 153, 0.14) 45%, rgba(52, 211, 153, 0) 100%);
-  transform: rotate(18deg);
-  filter: blur(6px);
-  animation: beam-sway 7s ease-in-out infinite alternate;
-
-  &.bm-1 {
-    left: 14%;
-  }
-
-  &.bm-2 {
-    left: 34%;
-    animation-delay: -3.5s;
-  }
-}
-
 .leaf {
   position: absolute;
   top: -30px;
@@ -434,16 +402,6 @@ function driftStyle(i: number): CSSProperties {
   &:nth-child(4n + 2) {
     background: linear-gradient(135deg, #a3e635, #65a30d);
   }
-}
-
-.firefly {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #6ee7b7;
-  box-shadow: 0 0 8px 2px rgba(52, 211, 153, 0.55);
-  animation: firefly-glow ease-in-out infinite alternate;
 }
 
 /* ====== 基础 ====== */
@@ -592,17 +550,6 @@ function driftStyle(i: number): CSSProperties {
   }
 }
 
-@keyframes beam-sway {
-  from {
-    opacity: 0.5;
-    transform: rotate(18deg) translateX(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: rotate(18deg) translateX(16px);
-  }
-}
-
 @keyframes leaf-fall {
   0% {
     transform: translate(0, -4vh) rotate(0deg);
@@ -620,17 +567,6 @@ function driftStyle(i: number): CSSProperties {
   100% {
     transform: translate(-3vw, 108vh) rotate(540deg);
     opacity: 0;
-  }
-}
-
-@keyframes firefly-glow {
-  from {
-    opacity: 0.12;
-    transform: translate(0, 0);
-  }
-  to {
-    opacity: 0.9;
-    transform: translate(12px, -10px);
   }
 }
 
